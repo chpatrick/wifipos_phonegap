@@ -52,7 +52,8 @@ along with 29C3-usermap.  If not, see <http://www.gnu.org/licenses/>.
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="http://code.leafletjs.com/leaflet-0.3.1/leaflet.ie.css" />
     <![endif]-->
-    <script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>    
+    <script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>
+    <script type="text/javascript" src="cordova-2.2.0.js"></script>    
 	<style>
 		body {
 			padding: 0;
@@ -67,6 +68,7 @@ along with 29C3-usermap.  If not, see <http://www.gnu.org/licenses/>.
 	<div id="map"></div>
 
 	<script>
+		document.addEventListener('deviceready', onDeviceReady, false);
 
 		var map = L.map('map').setView([1,1], 5);
 		var polygon_coords = "";
@@ -78,21 +80,23 @@ along with 29C3-usermap.  If not, see <http://www.gnu.org/licenses/>.
 			attribution: '29C3-usermap'
 		}).addTo(map);
 
-		var popup = L.popup();
-
 		function onMapClick(e) {
-			polygon_coords = polygon_coords + "["+e.latlng.toString()+"],";
-            location_link = window.location.href.replace(window.location.hash,"") + "#/loc/";
-            location_link += e.latlng.lat + '/' + e.latlng.lng;
-			popup
-				.setLatLng(e.latlng)
-				.setContent("You clicked the map at " + polygon_coords + 
-                    '<br /><a href="' + location_link + '">Link to location</a>')
-				.openOn(map);
+	    var circle = L.circle(e.latlng, 10, {color: "red"}).addTo(map)
+	    var success = function(results) {
+	      circle.setStyle({color: "green"});
+	    }
+	      
+	    var fail = function() {
+	      alert('SCAN FAILED');
+	    }
+	
+	    cordova.exec(success, fail, "Wifi", "scan", []);
 		}
-
-		map.on('click', onMapClick);
-
+		
+		// only bind on device ready
+		function onDeviceReady() {
+			map.on('click', onMapClick);
+		}
 	</script>
 </body>
 </html>
