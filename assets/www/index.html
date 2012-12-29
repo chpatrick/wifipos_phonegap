@@ -1,0 +1,99 @@
+<!--
+__author__ = "Samuel Carlisle"
+__copyright__ = "Copyright 2012"
+__credits__ = ["samthetechie,izrail,andy,nobody"]
+__license__ = "GPL Affero"
+__version__ = "3"
+__maintainer__ = "Samuel Carlisle"
+__email__ = "samuelcarlisle@gmail.com"
+__status__ = "Development"
+                                                       ____
+           ___                                      .-~. /_"-._        _______________________________
+          `-._~-.                                  / /_ "~o\  :Y      /We made 29C3-usermap so that   \
+              \  \                                / : \~x.  ` ')      |people could find their way    |
+               ]  Y                              /  |  Y< ~-.__j      |and get to the talks they want |
+              /   !                        _.--~T : l  l<  /.-~      < to. We hope you like it :)     |
+             /   /                 ____.--~ .   ` l /~\ \<|Y          \_______________________________/
+            /   /             .-~~"        /| .    ',-~\ \L|
+           /   /             /     .^   \ Y~Y \.^>/l_   "--'
+          /   Y           .-"(  .  l__  j_j l_/ /~_.-~    .
+         Y    l          /    \  )    ~~~." / `/"~ / \.__/l_
+         |     \     _.-"      ~-{__     l  :  l._Z~-.___.--~
+         |      ~---~           /   ~~"---\_  ' __[>
+         l  .                _.^   ___     _>-y~
+          \  \     .      .-~   .-~   ~>--"  /
+           \  ~---"            /     ./  _.-'
+            "-.,_____.,_  _.--~\     _.-~
+                        ~~     (   _}  
+                                `. ~(
+                                  )  \
+                                 /,`--'~\--'
+This file is part of 29C3-usermap.
+
+29C3-usermap is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+29C3-usermap is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU Affero Public License
+along with 29C3-usermap.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>29C3-usermap</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://code.leafletjs.com/leaflet-0.3.1/leaflet.ie.css" />
+    <![endif]-->
+    <script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>    
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+		html, body, #map {
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div id="map"></div>
+
+	<script>
+
+		var map = L.map('map').setView([1,1], 5);
+		var polygon_coords = "";
+		L.tileLayer('http://maps.congress.ccc.de/tiles/{z}/{x}/{y}.jpg', {
+			minZoom: 0,			
+			maxZoom: 5,
+			tileSize: 256,
+			continuousWorld: true,
+			attribution: '29C3-usermap'
+		}).addTo(map);
+
+		var popup = L.popup();
+
+		function onMapClick(e) {
+			polygon_coords = polygon_coords + "["+e.latlng.toString()+"],";
+            location_link = window.location.href.replace(window.location.hash,"") + "#/loc/";
+            location_link += e.latlng.lat + '/' + e.latlng.lng;
+			popup
+				.setLatLng(e.latlng)
+				.setContent("You clicked the map at " + polygon_coords + 
+                    '<br /><a href="' + location_link + '">Link to location</a>')
+				.openOn(map);
+		}
+
+		map.on('click', onMapClick);
+
+	</script>
+</body>
+</html>
+
