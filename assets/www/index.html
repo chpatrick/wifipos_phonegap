@@ -66,10 +66,14 @@ along with 29C3-usermap.  If not, see <http://www.gnu.org/licenses/>.
 </head>
 <body>
 	<div id="map"></div>
+	
+	<script type="text/javascript" src="jquery-1.8.3.min.js"></script>
 
 	<script>
 		document.addEventListener('deviceready', onDeviceReady, false);
 
+		var scanning = false;
+		
 		var map = L.map('map').setView([1,1], 5);
 		var polygon_coords = "";
 		L.tileLayer('http://maps.congress.ccc.de/tiles/{z}/{x}/{y}.jpg', {
@@ -81,15 +85,32 @@ along with 29C3-usermap.  If not, see <http://www.gnu.org/licenses/>.
 		}).addTo(map);
 
 		function onMapClick(e) {
-	    var circle = L.circle(e.latlng, 10, {color: "red"}).addTo(map)
+			if (scanning) { return; }
+			
+	    var circle = L.circle(e.latlng, 10000, {color: "red"}).addTo(map);
 	    var success = function(results) {
-	      circle.setStyle({color: "green"});
+	      circle.setStyle({color: "orange"});
+	      
+	      $.ajax("https://nh2.me:4444/upload", {
+	    		  method: 'POST',
+	    		  data: results,
+	    		  success: function () {
+	    			  circle.setStyle({color: "green"});
+	    			  scanning = false;
+	    		  },
+	    		  error: function () {
+	    			  alert("SUBMIT FAILED");
+	    			  scanning = false;
+	    		  }
+	      });
 	    }
 	      
 	    var fail = function() {
 	      alert('SCAN FAILED');
+	      scanning = false;
 	    }
 	
+	    scanning = true;
 	    cordova.exec(success, fail, "Wifi", "scan", []);
 		}
 		
